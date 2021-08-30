@@ -21,10 +21,16 @@ public final class RemoteFeedLoader: FeedLoader {
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { result in
 			switch result {
-			case let .success((_, request)):
-				if request.statusCode != 200 {
+			case let .success((data, request)):
+				guard request.statusCode != 200 else {
+					completion(.failure(Error.invalidData))
+					return
+				}
+
+				if FeedImageMapper.map(data) == nil {
 					completion(.failure(Error.invalidData))
 				}
+
 			default:
 				completion(.failure(Error.connectivity))
 			}
