@@ -9,11 +9,11 @@
 import Foundation
 
 internal final class FeedImageMapper {
-	internal struct Root: Decodable {
+	private struct Root: Decodable {
 		let images: [Image]
 	}
 
-	internal struct Image: Decodable {
+	private struct Image: Decodable {
 		let image_id: UUID
 		let image_desc, image_loc: String?
 		let image_url: URL
@@ -23,7 +23,13 @@ internal final class FeedImageMapper {
 		}
 	}
 
-	internal static func map(_ data: Data) -> Root? {
-		return try? JSONDecoder().decode(Root.self, from: data)
+	private static var HTTP_200_OK = 200
+
+	internal static func map(_ data: Data, from response: HTTPURLResponse) -> FeedLoader.Result {
+		guard response.statusCode == HTTP_200_OK, let _ = try? JSONDecoder().decode(Root.self, from: data) else {
+			return .failure(RemoteFeedLoader.Error.invalidData)
+		}
+
+		return .failure(RemoteFeedLoader.Error.invalidData)
 	}
 }
