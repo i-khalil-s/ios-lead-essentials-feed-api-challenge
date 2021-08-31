@@ -22,7 +22,6 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 			switch result {
 			case let .success((data, response)):
-
 				completion(FeedImageMapper.map(data, from: response))
 
 			default:
